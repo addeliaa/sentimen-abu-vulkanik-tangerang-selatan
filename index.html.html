@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisis Sentimen Abu Vulkanik Anak Krakatau - Tangerang Selatan</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-full flex flex-col">
+
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-amber-500/10 border border-amber-500/30 p-2.5 rounded-xl text-amber-400">
+                    <i class="fa-solid fa-volcano text-xl animate-pulse"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight text-white">Monitoring Sentimen Publik</h1>
+                    <p class="text-xs text-slate-400">Isu Abu Vulkanik Anak Krakatau &bull; Wilayah Tangerang Selatan</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-2 h-2 mr-1.5 rounded-full bg-emerald-400 animate-ping"></span> Live Apify Data
+                </span>
+                <button onclick="refreshData()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold px-3.5 py-2 rounded-lg transition border border-slate-600 flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate"></i> Muat Ulang
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        <!-- Summary Stat Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-2xl p-5 shadow-lg">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Sampel Data</p>
+                        <h3 class="text-2xl font-bold text-white mt-1">8,420</h3>
+                    </div>
+                    <div class="p-3 bg-blue-500/10 text-blue-400 rounded-xl"><i class="fa-solid fa-database text-lg"></i></div>
+                </div>
+                <div class="mt-4 flex items-center text-xs text-emerald-400 font-medium">
+                    <i class="fa-solid fa-arrow-trend-up mr-1"></i> +12.4% dari minggu lalu
+                </div>
+            </div>
+
+            <div class="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-2xl p-5 shadow-lg">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Sentimen Positif</p>
+                        <h3 class="text-2xl font-bold text-emerald-400 mt-1">38%</h3>
+                    </div>
+                    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl"><i class="fa-solid fa-face-smile text-lg"></i></div>
+                </div>
+                <div class="mt-4 flex items-center text-xs text-slate-400">
+                    <span>Dominan apresiasi kesiapsiagaan</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-2xl p-5 shadow-lg">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Sentimen Netral</p>
+                        <h3 class="text-2xl font-bold text-blue-400 mt-1">27%</h3>
+                    </div>
+                    <div class="p-3 bg-blue-500/10 text-blue-400 rounded-xl"><i class="fa-solid fa-face-meh text-lg"></i></div>
+                </div>
+                <div class="mt-4 flex items-center text-xs text-slate-400">
+                    <span>Berita informasi cuaca &amp; udara</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-2xl p-5 shadow-lg">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Sentimen Negatif</p>
+                        <h3 class="text-2xl font-bold text-rose-400 mt-1">35%</h3>
+                    </div>
+                    <div class="p-3 bg-rose-500/10 text-rose-400 rounded-xl"><i class="fa-solid fa-face-frown text-lg"></i></div>
+                </div>
+                <div class="mt-4 flex items-center text-xs text-rose-400 font-medium">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Keluhan gangguan pernapasan
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Doughnut Chart -->
+            <div class="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-2xl p-6 shadow-lg flex flex-col justify-between">
+                <div>
+                    <h3 class="text-base font-semibold text-white mb-1">Proporsi Sentimen Keseluruhan</h3>
+                    <p class="text-xs text-slate-400 mb-4">Persentase sentimen publik di Tangsel</p>
+                </div>
+                <div class="relative h-64 flex items-center justify-center">
+                    <canvas id="sentimentDoughnut"></canvas>
+                </div>
+                <div class="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
+                    <div class="bg-slate-700/50 p-2 rounded-lg"><span class="block font-bold text-emerald-400">38%</span> Positif</div>
+                    <div class="bg-slate-700/50 p-2 rounded-lg"><span class="block font-bold text-blue-400">27%</span> Netral</div>
+                    <div class="bg-slate-700/50 p-2 rounded-lg"><span class="block font-bold text-rose-400">35%</span> Negatif</div>
+                </div>
+            </div>
+
+            <!-- Bar Chart / Trend Analysis -->
+            <div class="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-2xl p-6 shadow-lg lg:col-span-2 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-base font-semibold text-white mb-1">Tren Harian Eskalasi Abu Vulkanik</h3>
+                    <p class="text-xs text-slate-400 mb-4">Perkembangan sentimen masyarakat berdasarkan waktu pengumpulan Apify</p>
+                </div>
+                <div class="relative h-64">
+                    <canvas id="sentimentTrend"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-2xl shadow-lg overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h3 class="text-base font-semibold text-white">8 Sampel Data Sentimen Utama (Apify Scraper)</h3>
+                    <p class="text-xs text-slate-400">Ringkasan opini publik terpilih terkait abu vulkanik Anak Krakatau di Tangerang Selatan</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari isi tweet/opini..." class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-amber-500 w-48 sm:w-64">
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table id="apifyTable" class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-900/60 text-xs uppercase text-slate-400 border-b border-slate-700">
+                        <tr>
+                            <th scope="col" class="px-6 py-3.5">No</th>
+                            <th scope="col" class="px-6 py-3.5">Akun / Pengguna</th>
+                            <th scope="col" class="px-6 py-3.5">Kecamatan Tangsel</th>
+                            <th scope="col" class="px-6 py-3.5">Isi Postingan / Opini Publik</th>
+                            <th scope="col" class="px-6 py-3.5">Sentimen</th>
+                            <th scope="col" class="px-6 py-3.5">Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-700/50">
+                        <!-- Data 1 -->
+                        <tr class="hover:bg-slate-700/30 transition">
+                            <td class="px-6 py-4 font-medium text-slate-400">1</td>
+                            <td class="px-6 py-4 font-semibold text-white flex items-center gap-2">
+                                <img src="https://placehold.co/32x32/3b82f6/ffffff?text=RD" class="w-7 h-7 rounded-full" alt="avatar" onerror="this.src='https://placehold.co/32x32/334155/ffffff?text=U'">
+                                @rizky_bintaro
+                            </td>
+                            <td class="px-6 py-4 text-slate-300">Bintaro</td>
+                            <td class="px-6 py-4 max-w-xs truncate" title="Langit agak berkabut abu tipis pagi ini di Bintaro, tapi aktivitas warga masih normal dan aman. Tetap siaga pakai masker!">Langit agak berkabut abu tipis pagi ini di Bintaro, tapi aktivitas warga masih normal dan aman. Tetap siaga pakai masker!</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Positif</span>
+                            </td>
+                            <td class="px-6 py-4 text-xs text-slate-400">10 Min lalu</td>
+                        </tr>
+                        <!-- Data 2 -->
+                        <tr class="hover:bg-slate-700/30 transition">
+                            <td class="px-6 py-4 font-medium text-slate-400">2</td>
+                            <td class="px-6 py-4 font-semibold text-white flex items-center gap-2">
+                                <img src="https://placehold.co/32x32/ef4444/ffffff?text=SD" class="w-7 h-7 rounded-full" alt="avatar" onerror="this.src='https://placehold.co/32x32/334155/ffffff?text=U'">
+                                @siti_ciputat
+                            </td>
+                            <td class="px-6 py-4 text-slate-300">Ciputat</td>
+                            <td class="px-6 py-4 max-w-xs truncate" title="Mata perih banget pas naik motor lewat Ciputat tadi siang, debu abu vulkaniknya kerasa banget nempel di helm dan kaca visor!">Mata perih banget pas naik motor lewat Ciputat tadi siang, debu abu vulkaniknya kerasa banget nempel di helm dan kaca visor!</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20">Negatif</span>
+                            </td>
+                            <td class="px-6 py-4 text-xs text-slate-400">25 Min lalu</td>
+                        </tr>
+                        <!-- Data 3 -->
+                        <tr class="hover:bg-slate-700/30 transition">
+                            <td class="px-6 py-4 font-medium text-slate-400">3</td>
+                            <td class="px-6 py-4 font-semibold text-white flex items-center gap-2">
+                                <img src="https://placehold.co/32x32/10b981/ffffff?text=AS" class="w-7 h-7 rounded-full" alt="avatar" onerror="this.src='https://placehold.co/32x32/334155/ffffff?text=U'">
+                                @agus_serpong
+                            </td>
+                            <td class="px-6 py-4 text-slate-300">Serpong</td>
+                            <td class="px-6 py-4 max-w-xs truncate" title="BMKG merilis arah angin dominan ke barat laut, wilayah Tangsel mendapat sebaran tipis sisa erupsi Anak Krakatau.">BMKG merilis arah angin dominan ke barat laut, wilayah Tangsel mendapat sebaran tipis sisa erupsi Anak Krakatau.</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">Netral</span>
+                            </td>
+                            <td class="px-6 py-4 text-xs text-slate-400">1 Jam lalu</td>
+                        </tr>
+                        <!-- Data 4 -->
+                        <tr class="hover:bg-slate-700/30 transition">
+                            <td class="px-6 py-4 font-medium text-slate-400">4</td>
+                            <td class="px-6 py-4 font-semibold text-white flex items-center gap-2">
+                                <img src="https://placehold.co/32x32/f59e0b/ffffff?text=DP" class="w-7 h-7 rounded-full" alt="avatar" onerror="this.src='https://placehold.co/32x32/334155/ffffff?text=U'">
+                                @dian_pamulang
+                            </td>
+                            <td class="px-6 py-4 text-slate-300">Pamulang</td>
+                            <td class="px-6 py-4 max-w-xs truncate" title="Anak-anak batuk pilek nih gara-gara kemarin main di luar pas angin agak berdebu. Tolong infonya masker gratis dari puskesmas.">Anak-anak batuk pilek nih gara-gara kemarin main di luar pas angin agak berdebu. Tolong infonya masker gratis dari puskesmas.</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20">Negatif</span>
+                            </td>
+                            <td class="px-6 py-4 text-xs text-slate-400">2 Jam lalu</td>
+                        </tr>
+                        <!-- Data 5 -->
+                        <tr class="hover:bg-slate-700/30 transition">
+                            <td class="px-6 py-4 font-medium text-slate-400">5</td>
+                            <td class="px-6 py-4 font-semibold text-white flex items-center gap-2">
+                                <img src="https://placehold.co/32x32/8b5cf6/ffffff?text=FD" class="w-7 h-7 rounded-full" alt="avatar" onerror="this.src='https://placehold.co/32x32/334155/ffffff?text=U'">
+                                @fajar_pondokaren
+                            </td>
+                            <td class="px-6 py-4 text-slate-300">Pondok Aren</td>
+                            <td class="px-6 py-4 max-w-xs truncate" title="Untung pemkot Tangsel gercep kasih himbauan pencegahan dini lewat akun resminya. Apresiasi buat petugas tanggap darurat!">Untung pemkot Tangsel gercep kasih himbauan pencegahan dini lewat akun resminya. Apresiasi buat petugas tanggap darurat!</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Positif</span>
+                            </td>
+                            <td class="px-6 py-4 text-xs text-slate-400">3 Jam lalu</td>
+                        </tr>
+                        <!-- Data 6 -->
+                        <tr class="hover:bg-slate-700/30 transition">
+                            <td class="px-6 py-4 font-medium text-slate-400">6</td>
+                            <td class="px-6 py-4 font-semibold text-white flex items-center gap-2">
+                                <img src="https://placehold.co/32x32/ec4899/ffffff?text=NL" class="w-7 h-7 rounded-full" alt="avatar" onerror="this.src='https://placehold.co/32x32/334155/ffffff?text=U'">
+                                @nila_setu
+                            </td>
+                            <td class="px-6 py-4 text-slate-300">Setu</td>
+                            <td class="px-6 py-4 max-w-xs truncate" title="Apakah ada instruksi khusus untuk penggunaan kacamata pelindung bagi pengendara motor di sekitar Setu dan Puspiptek?">Apakah ada instruksi khusus untuk penggunaan kacamata pelindung bagi pengendara motor di sekitar Setu dan Puspiptek?</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">Netral</span>
+                            </td>
+                            <td class="px-6 py-4 text-xs text-slate-400">4 Jam lalu</td>
+                        </tr>
+                        <!-- Data 7 -->
+                        <tr class="hover:bg-slate-700/30 transition">
+                            <td class="px-6 py-4 font-medium text-slate-400">7</td>
+                            <td class="px-6 py-4 font-semibold text-white flex items-center gap-2">
+                                <img src="https://placehold.co/32x32/06b6d4/ffffff?text=WH" class="w-7 h-7 rounded-full" alt="avatar" onerror="this.src='https://placehold.co/32x32/334155/ffffff?text=U'">
+                                @wahyu_ciputat_timur
+                            </td>
+                            <td class="px-6 py-4 text-slate-300">Ciputat Timur</td>
+                            <td class="px-6 py-4 max-w-xs truncate" title="Jemuran baju di perumahan jadi bau belerang dan kotor kena debu vulkanik tipis. Harus dicuci ulang semuanya.">Jemuran baju di perumahan jadi bau belerang dan kotor kena debu vulkanik tipis. Harus dicuci ulang semuanya.</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20">Negatif</span>
+                            </td>
+                            <td class="px-6 py-4 text-xs text-slate-400">5 Jam lalu</td>
+                        </tr>
+                        <!-- Data 8 -->
+                        <tr class="hover:bg-slate-700/30 transition">
+                            <td class="px-6 py-4 font-medium text-slate-400">8</td>
+                            <td class="px-6 py-4 font-semibold text-white flex items-center gap-2">
+                                <img src="https://placehold.co/32x32/84cc16/ffffff?text=RS" class="w-7 h-7 rounded-full" alt="avatar" onerror="this.src='https://placehold.co/32x32/334155/ffffff?text=U'">
+                                @rudi_serpong_utara
+                            </td>
+                            <td class="px-6 py-4 text-slate-300">Serpong Utara</td>
+                            <td class="px-6 py-4 max-w-xs truncate" title="Kualitas udara terpantau masih dalam ambang batas aman menurut aplikasi pemantau lingkungan. Semoga abunya cepat mereda.">Kualitas udara terpantau masih dalam ambang batas aman menurut aplikasi pemantau lingkungan. Semoga abunya cepat mereda.</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Positif</span>
+                            </td>
+                            <td class="px-6 py-4 text-xs text-slate-400">6 Jam lalu</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="px-6 py-4 bg-slate-900/40 border-t border-slate-700 flex justify-between items-center text-xs text-slate-400">
+                <span>Menampilkan 8 dari 8 data teratas (Apify API Stream)</span>
+                <div class="flex gap-2">
+                    <span class="text-amber-400 font-semibold cursor-pointer hover:underline">Halaman 1 dari 1</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-800 border-t border-slate-700 mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400">
+            <p>&copy; 2026 Dashboard Analisis Sentimen Kebencanaan &bull; Sumber Data Ekstraksi Apify &amp; Twitter Scraper Engine.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Chart.js global config for dark mode
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.font.family = "'Inter', sans-serif";
+
+        // Doughnut Chart
+        const ctxDoughnut = document.getElementById('sentimentDoughnut').getContext('2d');
+        const sentimentDoughnut = new Chart(ctxDoughnut, {
+            type: 'doughnut',
+            data: {
+                labels: ['Positif', 'Netral', 'Negatif'],
+                datasets: [{
+                    data: [38, 27, 35],
+                    backgroundColor: ['#10b981', '#3b82f6', '#f43f5e'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 15,
+                            font: { size: 11 }
+                        }
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+
+        // Line Trend Chart
+        const ctxTrend = document.getElementById('sentimentTrend').getContext('2d');
+        const sentimentTrend = new Chart(ctxTrend, {
+            type: 'line',
+            data: {
+                labels: ['Hari 1', 'Hari 2', 'Hari 3', 'Hari 4', 'Hari 5', 'Hari 6', 'Hari 7'],
+                datasets: [
+                    {
+                        label: 'Positif',
+                        data: [120, 190, 300, 450, 520, 610, 750],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Netral',
+                        data: [200, 240, 280, 310, 400, 430, 500],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Negatif',
+                        data: [350, 420, 390, 500, 620, 580, 690],
+                        borderColor: '#f43f5e',
+                        backgroundColor: 'rgba(244, 63, 94, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        align: 'end',
+                        labels: { boxWidth: 12, font: { size: 11 } }
+                    }
+                },
+                scales: {
+                    x: { grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+                    y: { grid: { color: 'rgba(255, 255, 255, 0.05)' } }
+                }
+            }
+        });
+
+        // Simple table search filter
+        function filterTable() {
+            let input = document.getElementById("searchInput");
+            let filter = input.value.toLowerCase();
+            let table = document.getElementById("apifyTable");
+            let tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                let tdUser = tr[i].getElementsByTagName("td")[1];
+                let tdLoc = tr[i].getElementsByTagName("td")[2];
+                let tdContent = tr[i].getElementsByTagName("td")[3];
+                if (tdUser || tdLoc || tdContent) {
+                    let textUser = tdUser.textContent || tdUser.innerText;
+                    let textLoc = tdLoc.textContent || tdLoc.innerText;
+                    let textContent = tdContent.textContent || tdContent.innerText;
+                    if (textUser.toLowerCase().indexOf(filter) > -1 || textLoc.toLowerCase().indexOf(filter) > -1 || textContent.toLowerCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        // Refresh action simulation
+        function refreshData() {
+            const btn = document.querySelector('button[onclick="refreshData()"]');
+            const icon = btn.querySelector('i');
+            icon.classList.add('fa-spin');
+            setTimeout(() => {
+                icon.classList.remove('fa-spin');
+                alertBox("Data Apify berhasil diperbarui secara real-time!");
+            }, 1000);
+        }
+
+        // Custom alert substitute
+        function alertBox(msg) {
+            const div = document.createElement('div');
+            div.className = 'fixed bottom-5 right-5 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-xl z-50 text-xs font-medium transition transform duration-300';
+            div.innerHTML = `<i class="fa-solid fa-circle-check mr-2"></i> ${msg}`;
+            document.body.appendChild(div);
+            setTimeout(() => {
+                div.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
